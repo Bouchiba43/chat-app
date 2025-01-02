@@ -159,7 +159,11 @@ export const useAuthStore = create((set, get) => ({
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
-      const res = await axiosInstance.post("/auth/login", data);
+      const encryptData = await encryptObject(data);
+      console.log("Encrypted data:", encryptData);
+      const res = await axiosInstance.post("/auth/login", {
+        data: encryptData
+      });
       set({ authUser: res.data });
       toast.success("Logged in successfully");
 

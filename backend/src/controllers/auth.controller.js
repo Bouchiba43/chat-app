@@ -56,7 +56,10 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+
+  const decryptedContent = decryptObject(req.body.data);
+  
+  const { email, password } = decryptedContent;
   try {
     const user = await User.findOne({ email });
 
