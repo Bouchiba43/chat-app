@@ -2,16 +2,24 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
+import { decryptObject } from "../utils/encrypt.js";
 
+/**
+ * @param {import("express").Request} req
+ */
 export const signup = async (req, res) => {
-  const { fullName, email, password } = decryptedData;
+  const decryptedContent = decryptObject(req.body.data);
+
+  const { fullName, email, password } = decryptedContent;
   try {
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     const user = await User.findOne({ email });
@@ -98,7 +106,7 @@ export const updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
-      { new: true }
+      { new: true },
     );
 
     res.status(200).json(updatedUser);
